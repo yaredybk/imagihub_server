@@ -50,7 +50,6 @@ exports.uploadImageAnon = async (req, res) => {
         )
         .then(
             async (data) =>{
-                console.log(data);
             let [[[r2]]] = data;
                 return new Promise((resolve, reject) => {
                     if (!r2) return reject("new row not found");

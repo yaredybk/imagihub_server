@@ -57,9 +57,7 @@ app.get("/", (req, res) => {
 });
 // remove /api/ dir from url 
 app.all("/api/*",(rq,rs,nx)=>{
-  console.log(rq.url);
   rq.url = rq.url.replace('/api','');
-  console.log(rq.url);
   nx();
 })
 // Route for a heartbeat endpoint
