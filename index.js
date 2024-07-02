@@ -62,7 +62,7 @@ app.use("/api",(rq,rs,nx)=>{
   nx();
 })
 // Route for a heartbeat endpoint
-app.get("/api/v1/heartbeat", (req, res) => {
+app.get("/v1/heartbeat", (req, res) => {
     if (req.session) {
         // Session exists, touch it to renew the expiry
         req.session.touch();
@@ -97,9 +97,9 @@ app.use(
         } Mb) has been reached`,
     })
 );
-// "/api/v1/anon/images",
+// "/v1/anon/images",
 app.post(
-    "/api/v1/anon/images",
+    "/v1/anon/images",
     imageUploadLimiter,
     require("./src/routes/imageUploadRoutes.js"),
     (rq, rs, nx) => {
@@ -132,9 +132,9 @@ const imageFailedGetLimiter = rateLimit({
             "You have exceeded the allowed number of failed attemptes. Please try again in a few minutes.",
     },
 });
-// "/api/v1/anon",
+// "/v1/anon",
 app.use(
-    "/api/v1/anon",
+    "/v1/anon",
     imageGetLimiter,
     express.static("files/anon", {
         maxAge: 1000 * 60,
