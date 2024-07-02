@@ -148,8 +148,8 @@ app.use(
         rs.sendStatus(404);
     }
 );
-app.all("/*",(rq,rs,nx)=>{
-  rs.status(404).send("API end point not found!")
+app.all("*",(rq,rs)=>{
+  rs.status(404).send(`API end point not found!\nurl:${rq.url}`)
 })
 // SETUP server
 setUp().then((_) => {
