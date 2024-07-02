@@ -17,7 +17,7 @@ const { setUp } = require("./src/config/setup.js");
 
 const app = express();
 
-app.set('trust proxy', true); // Trust the first proxy
+app.set('trust proxy', 1); // Trust the first proxy
 app.use(cookieParser()); // Middleware for parsing cookies
 app.use(helmet()); // Helmet middleware for various security headers
 // express session
