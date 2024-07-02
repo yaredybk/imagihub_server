@@ -56,6 +56,11 @@ app.use(
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
+// remove /api/ dir from url 
+app.use("/api",(rq,rs,nx)=>{
+  rq.url = rq.url.replace('/api','');
+  nx();
+})
 // Route for a heartbeat endpoint
 app.get("/api/v1/heartbeat", (req, res) => {
     if (req.session) {
@@ -143,6 +148,9 @@ app.use(
         rs.sendStatus(404);
     }
 );
+app.all("/*",(rq,rs,nx)=>{
+  rs.status(404).send("API end point not found!")
+})
 // SETUP server
 setUp().then((_) => {
     // Start the server and listen for connections on the specified port
