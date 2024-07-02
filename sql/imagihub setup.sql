@@ -4,7 +4,7 @@ use `imagihub_anon_v1`;
 drop table if exists `images`;
 CREATE TABLE `images` (
   `id_image` int NOT NULL AUTO_INCREMENT,
-  `i_name` varchar(35) NOT NULL DEFAULT (now()),
+  `i_name` varchar(35) NOT NULL DEFAULT  (CURRENT_TIMESTAMP),
   `i_affix` varchar(10) NOT NULL DEFAULT (left(substr(uuid(),(rand() * 5)),4)),
   `i_ext` varchar(5) NOT NULL,
   `i_dir` varchar(52) GENERATED ALWAYS AS (concat(`i_name`,_utf8mb4'_',`i_affix`,_utf8mb4'.',`i_ext`)) VIRTUAL,
