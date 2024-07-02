@@ -12,7 +12,7 @@ CREATE TABLE `images` (
   `id_user` int DEFAULT NULL,
   PRIMARY KEY (`id_image`),
   UNIQUE KEY `i_dir` (`i_dir`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ;
 
 
 DROP PROCEDURE IF EXISTS `new_image`;
