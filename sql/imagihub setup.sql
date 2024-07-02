@@ -21,11 +21,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `new_image`(
 	i_name varchar(15), ext text
 )
 BEGIN
-    select max(id_image) from images into @id_p;
+    select max(id_image) from imagihub_anon_v1.images into @id_p;
     set @rr = rand() * 5;
     set @ii = uuid();
     set @tmp_id = left(substr(@ii,@rr),4);
-	insert into images (i_name,i_affix,i_ext)
+	insert into imagihub_anon_v1.images (i_name,i_affix,i_ext)
     values(
 		i_name, 
 		 @tmp_id

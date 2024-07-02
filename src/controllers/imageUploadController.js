@@ -49,8 +49,10 @@ exports.uploadImageAnon = async (req, res) => {
                 .query("call new_image(?, ?);", [splitName[1], splitName[2]])
         )
         .then(
-            async ([[[r2]]]) =>
-                new Promise((resolve, reject) => {
+            async (data) =>{
+                console.log(data);
+            let [[[r2]]] = data;
+                return new Promise((resolve, reject) => {
                     if (!r2) return reject("new row not found");
                     imageFile.mv(
                         path.join(
@@ -62,7 +64,7 @@ exports.uploadImageAnon = async (req, res) => {
                             else resolve(r2);
                         }
                     );
-                })
+                })}
         )
         .then(async (r2) => {
             _db.promise()
