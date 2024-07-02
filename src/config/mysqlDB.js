@@ -6,7 +6,7 @@ let connectConfig = {
     user: process.env.DB_ANON_USER,
     password: process.env.DB_ANON_PASSWORD,
     // password: "123",
-    database: process.env.DB_ANON_DB,
+    database: process.env.DB_ANON_SCHEMA,
     dateStrings: true,
     // rowsAsArray: true,
 };

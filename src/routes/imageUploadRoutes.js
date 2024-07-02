@@ -6,6 +6,6 @@ const router = express.Router();
 //   /api/va/anon/images/ 
 
 // image upload route for anonymous users
-router.route("/").post(fileuploadController.uploadImageAnon);
+router.route("/api/v1/anon/images/").post(fileuploadController.uploadImageAnon);
 
 module.exports = router;

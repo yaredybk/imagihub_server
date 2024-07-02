@@ -55,7 +55,7 @@ exports.uploadImageAnon = async (req, res) => {
                     imageFile.mv(
                         path.join(
                             __dirname,
-                            `../../files/anon/image/${r2.i_dir}`
+                            `../../files/anon/images/${r2.dir}`
                         ),
                         function (err) {
                             if (err) reject(err);

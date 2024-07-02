@@ -13,6 +13,8 @@ const session = require("express-session");
 const fileUpload = require("express-fileupload");
 const expressStaticGzip = require("express-static-gzip");
 const rateLimit = require("express-rate-limit");
+const { setUp } = require("./src/config/setup.js");
+
 const app = express();
 
 // Middleware for parsing cookies
@@ -68,7 +70,7 @@ app.get("/api/v1/heartbeat", (req, res) => {
 // Rate limiting middleware for the image upload route
 const imageUploadLimiter = rateLimit({
     windowMs: 30 * 60 * 1000, // 30 minutes in milliseconds
-    max: 5, // Allow a maximum of 5
+    max: process.env.LIMIT_UPLOAD, // Allow a maximum of 5
     standardHeaders: true, // Include rate limit headers in the response
     legacyHeaders: false, // Don't use deprecated headers
     message: {
@@ -91,7 +93,7 @@ app.use(
     })
 );
 // "/api/v1/anon/images",
-app.use(
+app.post(
     "/api/v1/anon/images",
     imageUploadLimiter,
     require("./src/routes/imageUploadRoutes.js"),
@@ -104,7 +106,7 @@ app.use(
 // Rate limiting middleware for image get routes
 const imageGetLimiter = rateLimit({
     windowMs: 30 * 60 * 1000, // 30 minutes in milliseconds
-    max: 5, // Allow a maximum of 5 failed request
+    max: process.env.LIMIT_ALL, // Allow a maximum of 5 failed request
     standardHeaders: true, // Include rate limit headers in the response
     legacyHeaders: false, // Don't use deprecated headers
     message: {
@@ -116,7 +118,7 @@ const imageGetLimiter = rateLimit({
 // Rate limiting middleware for failed image get routes
 const imageFailedGetLimiter = rateLimit({
     windowMs: 30 * 60 * 1000, // 30 minutes in milliseconds
-    max: 5, // Allow a maximum of 5 failed request
+    max: process.env.LIMIT_RETRY, // Allow a maximum of 5 failed request
     standardHeaders: true, // Include rate limit headers in the response
     legacyHeaders: false, // Don't use deprecated headers
     message: {
@@ -137,11 +139,14 @@ app.use(
     imageFailedGetLimiter,
     (rq, rs) => {
         rq.session.failedRetries = (rq.session.failedRetries || 0) + 1;
+        console.log(rq.url);
         rs.sendStatus(404);
     }
 );
-
-// Start the server and listen for connections on the specified port
-app.listen(process.env.NODE_PORT, () => {
-    console.log(`Server is listening on port ${process.env.NODE_PORT}`);
+// SETUP server
+setUp().then((_) => {
+    // Start the server and listen for connections on the specified port
+    app.listen(process.env.NODE_PORT, () => {
+        console.log(`Server is listening on port ${process.env.NODE_PORT}`);
+    });
 });

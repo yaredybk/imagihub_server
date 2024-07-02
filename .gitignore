@@ -129,10 +129,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-files/anon/image*
-files/*
-!files/**/*
-bin/*
-!bin/**/*
-tmp/*
-sql/*
+bin/
+files/
+# sql/
+tmp/
