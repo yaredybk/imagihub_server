@@ -43,9 +43,10 @@ BEGIN
 		 @tmp_id
          ,ext
     );
-    commit;
+    SET @id = LAST_INSERT_ID();
     select concat(i_name,".",i_ext) as name,i_dir as dir,i_affix as id from images_with_dir where id_image = @id;
     
+    commit;
 END$$
 DELIMITER ;
 
