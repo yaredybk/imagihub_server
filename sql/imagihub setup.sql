@@ -7,12 +7,18 @@ CREATE TABLE `images` (
   `i_name` varchar(35) NOT NULL ,
   `i_affix` varchar(10) NOT NULL,
   `i_ext` varchar(5) NOT NULL,
-  `i_dir` varchar(52) GENERATED ALWAYS AS (concat(`i_name`,_utf8mb4'_',`i_affix`,_utf8mb4'.',`i_ext`)) VIRTUAL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `id_user` int DEFAULT NULL,
   PRIMARY KEY (`id_image`),
-  UNIQUE KEY `i_dir` (`i_dir`)
+  UNIQUE KEY `i_affix` (`i_affix`)
 ) ;
+
+drop view if exists `images_with_dir`;
+CREATE VIEW `images_with_dir` AS
+SELECT id_image, i_name, i_affix, i_ext,
+       concat(i_name, '_', i_affix, '.', i_ext) AS i_dir,
+       created_at, id_user
+FROM images;
 
 
 DROP PROCEDURE IF EXISTS `new_image`;
@@ -32,8 +38,14 @@ BEGIN
          ,ext
     );
     select last_insert_id()  into @id;
-    if (@id > @id_p ) then select concat(i_name,".",i_ext) as name,i_dir as dir,i_affix as id from images where id_image = @id;
+    if (@id > @id_p ) then select concat(i_name,".",i_ext) as name,i_dir as dir,i_affix as id from images_with_dir where id_image = @id;
     end if;
     
 END$$
 DELIMITER ;
+
+REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'imagihub'@'localhost';
+GRANT USAGE ON *.* TO 'imagihub'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON imagihub_anon_v1.* TO 'imagihub'@'localhost';
+GRANT EXECUTE ON PROCEDURE imagihub_anon_v1.new_image TO 'imagihub'@'localhost';
+FLUSH PRIVILEGES;

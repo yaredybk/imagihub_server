@@ -21,6 +21,7 @@
     "express-static-gzip": "^2.1.7",
     "helmet": "^7.1.0",
     "mysql2": "^3.10.1",
+    "pm2": "^5.4.1",
     "web-push": "^3.6.7"
   },
   "description": "",
