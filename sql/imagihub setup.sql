@@ -27,7 +27,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `new_image`(
 	i_name varchar(15), ext text
 )
 BEGIN
-    select max(id_image) from imagihub_anon_v1.images into @id_p;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+      ROLLBACK;
+      SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An error occurred';
+    END;
+
+    START TRANSACTION;
     set @rr = rand() * 5;
     set @ii = uuid();
     set @tmp_id = left(substr(@ii,@rr),4);
@@ -37,9 +43,8 @@ BEGIN
 		 @tmp_id
          ,ext
     );
-    select last_insert_id()  into @id;
-    if (@id > @id_p ) then select concat(i_name,".",i_ext) as name,i_dir as dir,i_affix as id from images_with_dir where id_image = @id;
-    end if;
+    commit;
+    select concat(i_name,".",i_ext) as name,i_dir as dir,i_affix as id from images_with_dir where id_image = @id;
     
 END$$
 DELIMITER ;
