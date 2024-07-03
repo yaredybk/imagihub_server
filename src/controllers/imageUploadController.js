@@ -1,7 +1,7 @@
 const express = require("express");
 
 const fs = require("fs");
-const { _db, _dbPromise } = require("../config/mysqlDB");
+const { _db } = require("../config/mysqlDB");
 const path = require("path");
 
 /**

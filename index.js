@@ -14,6 +14,7 @@ const fileUpload = require("express-fileupload");
 const expressStaticGzip = require("express-static-gzip");
 const rateLimit = require("express-rate-limit");
 const { setUp } = require("./src/config/setup.js");
+const { _db } = require("./src/config/mysqlDB");
 
 const app = express();
 
@@ -96,6 +97,36 @@ app.use(
         } Mb) has been reached`,
     })
 );
+// Rate limiting middleware for image get routes
+const imageIdLimiter = rateLimit({
+    windowMs: 30 * 60 * 1000, // 30 minutes in milliseconds
+    max: process.env.LIMIT_ALL, // Allow a maximum of 5 failed request
+    standardHeaders: true, // Include rate limit headers in the response
+    legacyHeaders: false, // Don't use deprecated headers
+    message: {
+        code: "TOO_MANY_REQUESTS",
+        message:
+            "You have exceeded the allowed number of image requests. Please try again in a few minutes.",
+    },
+});
+// get image name by id
+app.get("/v1/anon/image/:id",
+	imageIdLimiter,
+	(req,res) => {
+	let {id} =  req.params;
+	_db.promise()
+	.query('select concat(i_name,".",i_ext) as name,i_dir as dir,i_affix as id \
+		from images_with_dir where id_image = ?;', id)
+	.then(([[r]]) => {
+		if(r) return res.send(r)
+
+		res.sendStatus(500);
+	})
+	.catch(e => {
+		console.trace(e);
+		res.sendStatus(500);
+	})
+})
 // "/v1/anon/images",
 app.post(
     "/v1/anon/images",
