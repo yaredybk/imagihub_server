@@ -66,14 +66,11 @@ exports.uploadImageAnon = async (req, res) => {
                 })}
         )
         .then(async (r2) => {
-            _db.promise()
-                .commit()
-                .then(() =>
-                    res.status(201).send({
-                        new: r2,
-                        message: "upload complete",
-                    })
-                );
+            _db.commit();
+	    res.status(201).send({
+		new: r2,
+		message: "upload complete",
+	    });
         })
         .catch((e) => {
             _trace(e);

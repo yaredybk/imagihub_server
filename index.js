@@ -119,7 +119,6 @@ app.get("/v1/anon/image/:id",
 		from images_with_dir where id_image = ?;', id)
 	.then(([[r]]) => {
 		if(r) return res.send(r)
-
 		res.sendStatus(500);
 	})
 	.catch(e => {

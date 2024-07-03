@@ -57,6 +57,17 @@ async function reconnectToDB(timeout = 5000) {
         connectToDB();
     }, timeout);
 }
+
 connectToDB();
+
+setInterval(() => {
+    _db.query("select 1;", (err) => {
+        if (err) {
+            // console.log(">- SELECT 1; -<\n", err);
+            reconnectToDB(undefined, 1 * 1000);
+        }
+    });
+
+}, 5 * 60 * 1000);
 
 module.exports = {_db,_dbPromise:_db.promise}

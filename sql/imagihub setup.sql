@@ -4,7 +4,7 @@ use `imagihub_anon_v1`;
 drop table if exists `images`;
 CREATE TABLE `images` (
   `id_image` int NOT NULL AUTO_INCREMENT,
-  `i_name` varchar(35) NOT NULL ,
+  `i_name` varchar(50) NOT NULL ,
   `i_affix` varchar(10) NOT NULL,
   `i_ext` varchar(5) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -24,7 +24,7 @@ FROM images;
 DROP PROCEDURE IF EXISTS `new_image`;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `new_image`(
-	i_name varchar(15), ext text
+	i_name varchar(50), ext text
 )
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
