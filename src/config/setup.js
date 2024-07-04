@@ -2,6 +2,7 @@
  * run this setup before starting the server
  */
 
+const { DeleteOldImages } = require("./StorageCleanUp");
 const { checkAndCreateMultipleFolders } = require("./setUpFolders");
 
 /**
@@ -15,8 +16,19 @@ async function setUp() {
         ["tmp"],
     ];
     await checkAndCreateMultipleFolders(folders)
-        .then(() => console.log("All folders exist or created successfully."))
+        .then(() =>
+            console.log("-> All folders exist or created successfully.")
+        )
         .catch((error) => console.error("Error creating folders:", error));
+    await DeleteOldImages()
+        .then((_) => console.log("-> deleted old images"))
+        .catch(console.trace);
+    setInterval(() => {
+        DeleteOldImages()
+            .then((_) => console.log("-> deleted old images"))
+            .catch(console.trace);
+    }, 20 * 60 * 1000);
+    console.log("-> delete scheduled at every 20 minitues")
 }
 
-module.exports = {setUp}
+module.exports = { setUp };

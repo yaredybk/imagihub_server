@@ -2,6 +2,13 @@ const { _db } = require("./mysqlDB");
 const path = require("path");
 const fs = require("fs").promises;
 
+
+/**
+ * delete old images (2 hours old)
+ * @param {{rootPath:string}} prop path for where the images are
+ * @returns {Promise}
+ * @example - DeleteOldImages().then(console.log).catch(console.trace);
+ */
 async function DeleteOldImages(prop = { rootPath: "/files/anon/images" }) {
     return _db
         .promise()
@@ -25,7 +32,6 @@ where created_at < (current_timestamp - INTERVAL 2 HOUR);"
             )
         )
         .then((r) => {
-            console.log(r);
             return _db.promise().query(
                 "delete from imagihub_anon_v1.images_with_dir \
 			where created_at < (current_timestamp - INTERVAL 2 HOUR);"
@@ -34,4 +40,6 @@ where created_at < (current_timestamp - INTERVAL 2 HOUR);"
         .catch((e) => console.trace(e));
 }
 
-DeleteOldImages().then(console.log).catch(console.trace);
+module.exports={
+	DeleteOldImages
+}
