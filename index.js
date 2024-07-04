@@ -114,10 +114,15 @@ app.get("/v1/anon/image/:id",
 	imageIdLimiter,
 	(req,res) => {
 	let {id} =  req.params;
+	if(!id || !id.match(/[a-zA-Z0-9]{4}/)){
+		return res.sendStatus(400);
+	}
 	_db.promise()
-	.query('select concat(i_name,".",i_ext) as name,i_dir as dir,i_affix as id \
-		from images_with_dir where id_image = ?;', id)
-	.then(([[r]]) => {
+	.query(`select concat(i_name,".",i_ext) as name,i_dir as dir,i_affix as id \
+		from images_with_dir where i_affix = '${id}';`)
+	.then((d) => {
+		console.log(d);
+		let [[r]] = d;
 		if(r) return res.send(r)
 		res.sendStatus(500);
 	})
