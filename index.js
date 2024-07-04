@@ -121,7 +121,6 @@ app.get("/v1/anon/image/:id",
 	.query(`select concat(i_name,".",i_ext) as name,i_dir as dir,i_affix as id \
 		from images_with_dir where i_affix = '${id}';`)
 	.then((d) => {
-		console.log(d);
 		let [[r]] = d;
 		if(r) return res.send(r)
 		res.sendStatus(500);
