@@ -15,19 +15,19 @@ const expressStaticGzip = require("express-static-gzip");
 const rateLimit = require("express-rate-limit");
 const { setUp } = require("./src/config/setup.js");
 const { _db } = require("./src/config/mysqlDB");
+const {
+    LimitFailedRetries,
+    CountFailedRetries,
+} = require("./src/middlewares/limit.js");
+const { getImageById } = require("./src/controllers/getImageById.js");
 
 const app = express();
 
-app.set('trust proxy', 1); // Trust the first proxy
+app.set("trust proxy", 1); // Trust the first proxy #nginx
 app.use(cookieParser()); // Middleware for parsing cookies
 app.use(helmet()); // Helmet middleware for various security headers
 // express session
 app.use(
-    (rq, rs, nx) => {
-        // if (!rq.cookies.anon) return rs.sendStatus(403);
-        // add cookie check and tag new_user if no cookie found
-        nx();
-    },
     session({
         secret: process.env.SESSION_KEY,
         resave: false, // Don't save unmodified sessions
@@ -41,26 +41,18 @@ app.use(
             rolling: true, // Reset cookie expiry on every request
         },
         name: "anon",
-    }),
-    (req, res, next) => {
-        // req.sessionStore.length((err, len) => {
-        //     console.log({ err, len });
-        // });
-        // req.session.total = (req.session.total || 0) + 1;
-        // if (req.session.total > 2) req.session.block = true;
-        next();
-    }
+    })
 );
 
 // Route for the root path (/)
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
-// remove /api/ dir from url 
-app.all("/api/*",(rq,rs,nx)=>{
-  rq.url = rq.url.replace('/api','');
-  nx();
-})
+// remove /api/ dir from url
+app.all("/api/*", (rq, rs, nx) => {
+    rq.url = rq.url.replace("/api", "");
+    nx();
+});
 // Route for a heartbeat endpoint
 app.get("/v1/heartbeat", (req, res) => {
     if (req.session) {
@@ -110,26 +102,13 @@ const imageIdLimiter = rateLimit({
     },
 });
 // get image name by id
-app.get("/v1/anon/image/:id",
-	imageIdLimiter,
-	(req,res) => {
-	let {id} =  req.params;
-	if(!id || !id.match(/[a-zA-Z0-9]{4}/)){
-		return res.sendStatus(400);
-	}
-	_db.promise()
-	.query(`select concat(i_name,".",i_ext) as name,i_dir as dir,i_affix as id \
-		from images_with_dir where i_affix = '${id}';`)
-	.then((d) => {
-		let [[r]] = d;
-		if(r) return res.send(r)
-		res.sendStatus(500);
-	})
-	.catch(e => {
-		console.trace(e);
-		res.sendStatus(500);
-	})
-})
+app.get(
+    "/v1/anon/image/:id",
+    imageIdLimiter,
+    LimitFailedRetries,
+    getImageById,
+    CountFailedRetries
+);
 // "/v1/anon/images",
 app.post(
     "/v1/anon/images",
@@ -153,37 +132,22 @@ const imageGetLimiter = rateLimit({
             "You have exceeded the allowed number of image requests. Please try again in a few minutes.",
     },
 });
-// Rate limiting middleware for failed image get routes
-const imageFailedGetLimiter = rateLimit({
-    windowMs: 30 * 60 * 1000, // 30 minutes in milliseconds
-    max: process.env.LIMIT_RETRY, // Allow a maximum of 5 failed request
-    standardHeaders: true, // Include rate limit headers in the response
-    legacyHeaders: false, // Don't use deprecated headers
-    message: {
-        code: "TOO_MANY_FAILED_REQUESTS",
-        message:
-            "You have exceeded the allowed number of failed attemptes. Please try again in a few minutes.",
-    },
-});
 // "/v1/anon",
 app.use(
     "/v1/anon",
     imageGetLimiter,
+    LimitFailedRetries,
     express.static("files/anon", {
         maxAge: 1000 * 60,
         etag: true,
         index: false,
     }),
-    imageFailedGetLimiter,
-    (rq, rs) => {
-        rq.session.failedRetries = (rq.session.failedRetries || 0) + 1;
-        console.log(rq.url);
-        rs.sendStatus(404);
-    }
+    // imageFailedGetLimiter,
+    CountFailedRetries
 );
-app.all("*",(rq,rs)=>{
-  rs.status(404).send(`API end point not found!\nurl:${rq.url}`)
-})
+app.all("*", (rq, rs) => {
+    rs.status(404).send(`API end point not found!\nurl:${rq.url}`);
+});
 // SETUP server
 setUp().then((_) => {
     // Start the server and listen for connections on the specified port

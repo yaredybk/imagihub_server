@@ -25,10 +25,12 @@ async function setUp() {
         .catch(console.trace);
     setInterval(() => {
         DeleteOldImages()
-            .then((_) => console.log("-> deleted old images"))
+            .then((_) => {
+                // console.log("-> deleted old images");
+            })
             .catch(console.trace);
     }, 20 * 60 * 1000);
-    console.log("-> delete scheduled at every 20 minitues")
+    console.log("-> delete scheduled at every 20 minitues");
 }
 
 module.exports = { setUp };
