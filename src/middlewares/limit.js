@@ -24,7 +24,7 @@ async function LimitFailedRetries(rq, rs, nx) {
  */
 async function CountFailedRetries(rq, rs) {
     rq.session.failedRetries = (rq.session.failedRetries || 0) + 1;
-    rs.sendStatus(400);
+    rs.sendStatus(404);
 }
 
 module.exports = {
