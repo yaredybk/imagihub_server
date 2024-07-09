@@ -132,7 +132,7 @@ const imageGetLimiter = rateLimit({
             "You have exceeded the allowed number of image requests. Please try again in a few minutes.",
     },
 });
-app.use("/v1/anon/sent_images/:id", (rq, rs, nx) => {
+app.all("/v1/anon/sent_images/:id", (rq, rs, nx) => {
     rq.url = rq.url.replace("/sent_images", "/images");
     nx();
 });
