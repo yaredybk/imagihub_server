@@ -11,9 +11,6 @@ const path = require("path");
  * @returns
  */
 exports.uploadImageAnon = async (req, res) => {
-    req.session.uploadCount = (req.session.uploadCount || 0) + 1;
-    if (req.session.uploadCount > 5) return res.sendStatus(429);
-
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send("No files were uploaded.");
     }

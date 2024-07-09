@@ -63,11 +63,30 @@ app.get("/v1/heartbeat", (req, res) => {
         res.status(401).send("Unauthorized"); // No session, unauthorized access
     }
 });
-
+// Rate limiting middleware for image get routes
+const imageIdLimiter = rateLimit({
+    windowMs: 30 * 60 * 1000, // 30 minutes in milliseconds
+    max: process.env.LIMIT_ALL, // Allow a maximum of 5 failed request
+    standardHeaders: true, // Include rate limit headers in the response
+    legacyHeaders: false, // Don't use deprecated headers
+    message: {
+        code: "TOO_MANY_REQUESTS",
+        message:
+            "You have exceeded the allowed number of image requests. Please try again in a few minutes.",
+    },
+});
+// get image name by id
+app.get(
+    "/v1/anon/image/:id",
+    imageIdLimiter,
+    LimitFailedRetries,
+    getImageById,
+    CountFailedRetries
+);
 // Rate limiting middleware for the image upload route
 const imageUploadLimiter = rateLimit({
     windowMs: 30 * 60 * 1000, // 30 minutes in milliseconds
-    max: process.env.LIMIT_UPLOAD, // Allow a maximum of 5
+    max: process.env.LIMIT_UPLOAD,
     standardHeaders: true, // Include rate limit headers in the response
     legacyHeaders: false, // Don't use deprecated headers
     message: {
@@ -89,26 +108,7 @@ app.use(
         } Mb) has been reached`,
     })
 );
-// Rate limiting middleware for image get routes
-const imageIdLimiter = rateLimit({
-    windowMs: 30 * 60 * 1000, // 30 minutes in milliseconds
-    max: process.env.LIMIT_ALL, // Allow a maximum of 5 failed request
-    standardHeaders: true, // Include rate limit headers in the response
-    legacyHeaders: false, // Don't use deprecated headers
-    message: {
-        code: "TOO_MANY_REQUESTS",
-        message:
-            "You have exceeded the allowed number of image requests. Please try again in a few minutes.",
-    },
-});
-// get image name by id
-app.get(
-    "/v1/anon/image/:id",
-    imageIdLimiter,
-    LimitFailedRetries,
-    getImageById,
-    CountFailedRetries
-);
+
 // "/v1/anon/images",
 app.post(
     "/v1/anon/images",
@@ -131,6 +131,10 @@ const imageGetLimiter = rateLimit({
         message:
             "You have exceeded the allowed number of image requests. Please try again in a few minutes.",
     },
+});
+app.use("/v1/anon/sent_images/:id", (rq, rs, nx) => {
+    rq.url = rq.url.replace("/sent_images", "/images");
+    nx();
 });
 // "/v1/anon",
 app.use(
