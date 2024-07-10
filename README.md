@@ -1,22 +1,22 @@
 # [Imagihub](https://imagihub.yaredb.tech)
 
 # Welcome to the ImagiHub Node.js server repository!
-ImagiHub is a Node.js server for a simple image sharing web application. It aims to provide a user-friendly and efficient way to share images without the limitations of existing platforms.
+ImagiHub is a Node.js server for a simple image-sharing web application. It aims to provide a user-friendly and efficient way to share images without the limitations of existing platforms.
   @ [imagihub](https://imagihub.yaredb.tech) or [imagihub](https://imagihub.yaredb.net.et)
 
 ----------------------------------------------------------
 
 We are living in a digital world, but the hustle to just send an image,
 * You need to login
-* You must use same social media
+* You must use the same social media
 * The image is compressed
-* You need to share it to every one or create a group
-* Most of the time you need android
-There are a ton of solutions for this. I just want to contribute to the cause, make an alternative easy way of sharing images. 
+* You need to share it with everyone or create a group
+* Most of the time you need an android
+There are a ton of solutions for this. I just want to contribute to the cause and make an alternative easy way of sharing images. 
 
 ----------------------------------------------------------
 
-This repository contains the backend code for the ImagiHub image sharing application. The front-end code for the user interface is located in a separate repository [imagihub app](https://github.com/yaredybk/imagihub_app).
+This repository contains the backend code for the ImagiHub image-sharing application. The front-end code for the user interface is located in a separate repository [imagihub app](https://github.com/yaredybk/imagihub_app).
 
 ## Features:
 * Secure user authentication and session management using cookies and express-session.
@@ -54,7 +54,7 @@ The [imagihub setup.sql](https://github.com/yaredybk/imagihub_server/blob/main/s
 
 2. Image View Creation:
 * Creates a view named images_with_dir that combines image data with a constructed directory path:
-  * Selects relevant columns from the images table.
+  * Select relevant columns from the images table.
   * Concatenates i_name, _, i_affix, and . with i_ext to create a virtual directory path for the image (likely used for file storage).
 
 3. Stored Procedure Creation:
@@ -62,11 +62,11 @@ The [imagihub setup.sql](https://github.com/yaredybk/imagihub_server/blob/main/s
   * Takes two arguments: i_name (image filename) and ext (image extension).
   * Uses a transaction to ensure data consistency.
   * Generates a random 4-character i_affix and a unique identifier (@ii) using UUID.
-  * Inserts a new image record into the images table with provided details and generated i_affix.
+  * Inserts a new image record into the images table with provided details and generates i_affix.
   * Retrieves the newly inserted image data with the constructed directory path from the images_with_dir view.
   * Commits the transaction on successful insertion.
   * Catches potential SQL exceptions and rolls back the transaction with an error message.
-[note] please note that the method used to generate the random string, sometimes generates a null string!
+[note] Please note that the method used to generate the random string sometimes generates a null string!
 [possible fix] use conv(left(uuid(),5),16,36)
 
 4. Database User Permissions:
@@ -112,7 +112,8 @@ The [imagihub setup.sql](https://github.com/yaredybk/imagihub_server/blob/main/s
 ## Acknowledgments
 * [ALX Africa - ALX Africa](https://www.alxafrica.com/)
 * [.Tech Domains](https://get.tech)
-* this list is not complete
+* [Grammarly](https://www.grammarly.com)
+* To all my family and friends who continue to encourage me
 * I had some help setting up this README file from [Gemini by Google](https://gemini.google.com). Their large language model capabilities were instrumental in providing guidance and suggestions.
 
 
